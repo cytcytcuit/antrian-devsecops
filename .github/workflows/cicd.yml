@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.7.0
+        uses: zaproxy/action-baseline@v0.10.0
         with:
           target: ${{ secrets.ZAP_TARGET_URL }}
           cmd_options: "-a -r zap_report.html"
