@@ -48,8 +48,15 @@ jobs:
           ZAP_TARGET_URL: ${{ secrets.ZAP_TARGET_URL }}
         run: |
           echo "Starting DAST scan on target: $ZAP_TARGET_URL"
-          docker run -t ghcr.io/zaproxy/zaproxy:stable \
-          zap-baseline.py -t $ZAP_TARGET_URL -r zap_report.html
+
+          mkdir -p zap
+
+          docker run -t \
+            -v $(pwd)/zap:/zap/wrk \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t $ZAP_TARGET_URL -r zap_report.html
+            
+          mv zap/zap_report.html zap_report.html
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
