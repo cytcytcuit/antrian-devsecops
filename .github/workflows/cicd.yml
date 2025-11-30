@@ -9,9 +9,9 @@ on:
 
 jobs:
 
-  # ==========================
-  # 1. SAST - SonarCloud
-  # ==========================
+  # ===================================================
+  # 1. SAST - Static Analysis (SonarCloud)
+  # ===================================================
   SAST-SonarCloud:
     name: 🛡️ SAST Scan (SonarCloud)
     runs-on: ubuntu-latest
@@ -32,9 +32,10 @@ jobs:
             -Dsonar.organization=cytcytcuit
             -Dsonar.projectKey=cytcytcuit_antrian-devsecops
 
-  # ==========================
-  # 2. DAST - OWASP ZAP
-  # ==========================
+
+  # ===================================================
+  # 2. DAST - OWASP ZAP Baseline Scan
+  # ===================================================
   DAST-ZAP:
     name: 🌐 DAST Scan (OWASP ZAP Baseline)
     runs-on: ubuntu-latest
@@ -44,24 +45,9 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Run ZAP Baseline Scan
-        id: zap
+      - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.10.0
         with:
           target: ${{ secrets.ZAP_TARGET_URL }}
-          cmd_options: "-a -r zap_report.html"
-
-      # --- FIX: Copy output HTML from ZAP container to workspace
-      - name: Copy ZAP Report to workspace
-        run: |
-          CONTAINER_ID=$(docker ps -q --filter "ancestor=owasp/zap2docker-stable")
-          echo "Container: $CONTAINER_ID"
-          docker cp $CONTAINER_ID:/zap/wrk/zap_report.html ./zap_report.html
-          ls -lah .
-
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: ZAP-Baseline-Report
-          path: ./zap_report.html
-          retention-days: 7
+          cmd_options: "-a"
+          artifact_name: "ZAP-Report"    # ← otomatis upload zap_report.html
